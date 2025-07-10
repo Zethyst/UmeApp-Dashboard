@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   BarChart,
   Bar,
@@ -16,6 +16,9 @@ import Header from "./components/Header";
 import Stats from "./components/Stats";
 import WebinarCard from "./components/WebinarCard";
 import StudentTable from "./components/StudentTable";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+gsap.registerPlugin(ScrollTrigger);
 
 const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -85,20 +88,9 @@ const courses = [
   },
 ];
 
-// Card Component
 const Card = ({ children, className = "" }: any) => (
   <div className={`bg-white rounded-lg shadow-sm border p-6 ${className}`}>
     {children}
-  </div>
-);
-
-// Progress Bar Component
-const ProgressBar = ({ progress }: any) => (
-  <div className="w-full bg-gray-200 rounded-full h-2">
-    <div
-      className="bg-blue-500 h-2 rounded-full transition-all duration-300"
-      style={{ width: `${progress}%` }}
-    />
   </div>
 );
 
@@ -106,6 +98,118 @@ const Dashboard = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [currentDate, setCurrentDate] = useState(new Date());
   const [students, setStudents] = useState([]);
+  const sidebarRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
+  const studentRef = useRef<HTMLDivElement>(null);
+  const asideRef = useRef<HTMLDivElement>(null);
+  const dataRef = useRef<HTMLDivElement>(null);
+  const trainersRef = useRef<HTMLDivElement>(null);
+  const graphBoxRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const tl = gsap.timeline();
+    const profileItems = Array.from(trainersRef.current?.children || []);
+    gsap.set(profileItems, { x: 100, opacity: 0 });
+
+    gsap.to(profileItems, {
+      x: 0,
+      opacity: 1,
+      duration: 1.2,
+      ease: "bounce.out",
+      stagger: {
+        amount: 0.4,
+        from: "start",
+      },
+    });
+    const children = Array.from(asideRef.current?.children || []);
+    gsap.set(children, { x: 100, opacity: 0 });
+
+    gsap.to(children, {
+      x: 0,
+      opacity: 1,
+      duration: 1.4,
+      ease: "bounce.inOut",
+      stagger: {
+        amount: 0.5,
+        from: "start",
+      },
+    });
+
+    tl.from(sidebarRef.current, {
+      x: -200,
+      duration: 1,
+      opacity: 0,
+      ease: "power2.out",
+      delay: 0.2,
+    })
+      .from(
+        headerRef.current,
+        {
+          y: -100,
+          duration: 0.8,
+          opacity: 0,
+          ease: "power2.out",
+          delay: 0.1,
+        },
+        "<"
+      )
+      .from(
+        asideRef.current,
+        {
+          x: 200,
+          duration: 0.9,
+          opacity: 0,
+          ease: "power2.out",
+          delay: 0.2,
+        },
+        "<"
+      );
+
+    const stats = Array.from(dataRef.current?.children || []);
+    const graphs = Array.from(graphBoxRef.current?.children || []);
+
+    gsap.set(stats, { opacity: 0, y: 200 });
+    gsap.set(graphs, { opacity: 0, y: 200 });
+
+    tl.to(
+      stats,
+      {
+        y: 0,
+        opacity: 1,
+        duration: 0.9,
+        ease: "power2.out",
+        stagger: 0.1,
+      },
+      "+=0.2"
+    ).to(
+      graphs,
+      {
+        y: 0,
+        opacity: 1,
+        duration: 0.9,
+        ease: "power2.out",
+        stagger: 0.1,
+      },
+      "<"
+    );
+
+    gsap.from(studentRef.current, {
+      y: 200,
+      opacity: 0,
+      duration: 1,
+      ease: "power2.out",
+      scrollTrigger: {
+        trigger: studentRef.current,
+        start: "top 90%",
+        toggleActions: "play none none none",
+      },
+    });
+
+    return () => {
+      tl.kill();
+      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+    };
+  }, []);
 
   const getWeekDates = () => {
     const today = new Date(currentDate);
@@ -130,13 +234,20 @@ const Dashboard = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
-      <Header />
-      <div className="flex justify-center items-start">
-        <main className="ml-64 p-6 flex flex-col space-y-6 ">
-          <Stats students={students} />
+      <Sidebar
+        sidebarRef={sidebarRef}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+      />
+      <Header headerRef={headerRef} />
+      <div className="flex flex-col md:flex-row justify-center items-start">
+        <main className="lg:ml-64 p-6 flex flex-col space-y-6 ">
+          <Stats dataRef={dataRef} students={students} />
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          <div
+            ref={graphBoxRef}
+            className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6"
+          >
             <RevenueChart />
             <Card>
               <div className="flex items-center justify-between mb-4">
@@ -162,7 +273,7 @@ const Dashboard = () => {
             </Card>
           </div>
 
-          <div className="grid grid-cols-1 gap-6">
+          <div ref={studentRef} className="grid grid-cols-1 gap-6">
             <Card className="lg:col-span-2">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-bold tracking-wide">
@@ -174,16 +285,16 @@ const Dashboard = () => {
               </div>
 
               <div className="flex mb-4">
-                <button className="px-8 py-2 bg-[#5067bb] text-white rounded-l-4xl text-sm">
+                <button className="px-2 lg:px-8 py-2 bg-[#5067bb] text-white rounded-l-4xl text-xs md:text-sm">
                   View all
                 </button>
-                <button className="px-8 py-2 border text-gray-600  text-sm">
+                <button className="px-2 lg:px-8 py-2 border text-gray-600  text-xs md:text-sm">
                   Enrolled
                 </button>
-                <button className="px-8 py-2 border text-gray-600  text-sm">
+                <button className="px-2 lg:px-8 py-2 border text-gray-600  text-xs md:text-sm">
                   Active now
                 </button>
-                <button className="px-8 py-2 border text-gray-600 rounded-r-4xl text-sm">
+                <button className="px-2 lg:px-8 py-2 border text-gray-600 rounded-r-4xl text-xs md:text-sm">
                   Unenrolled
                 </button>
               </div>
@@ -195,9 +306,11 @@ const Dashboard = () => {
           </div>
         </main>
 
-        {/* Right Sidebar */}
-        <aside className="space-y-6 mt-7 px-3 min-w-96">
-          <Card>
+        <aside ref={asideRef} className="space-y-6 mt-7 px-3 md:min-w-96">
+          <div
+            ref={trainersRef}
+            className="bg-white rounded-lg shadow-sm border p-6"
+          >
             <h3 className="text-lg font-bold mb-4">Active Trainers</h3>
             <div className="grid grid-cols-7 gap-1">
               {weekDates.map((date, index) => (
@@ -219,7 +332,7 @@ const Dashboard = () => {
               ))}
             </div>
 
-            <div className="space-y-2 mt-2">
+            <div ref={trainersRef} className="space-y-2 mt-2">
               {profiles.map((profile) => (
                 <div
                   key={profile.id}
@@ -247,7 +360,7 @@ const Dashboard = () => {
                 </div>
               ))}
             </div>
-          </Card>
+          </div>
 
           <Card>
             <div className="flex items-center justify-between mb-4">

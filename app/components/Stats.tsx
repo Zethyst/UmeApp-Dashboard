@@ -12,9 +12,9 @@ const StatCard = ({ title, value, bgColor }: any) => (
   </Card>
 );
 
-function Stats({students}: any) {
+function Stats({students, dataRef}: any) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+    <div ref={dataRef} className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
       <StatCard
         title="Total User"
         value={students.length}

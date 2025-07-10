@@ -16,7 +16,7 @@ import {
   Blocks,
 } from "lucide-react";
 
-function Sidebar({ activeTab, setActiveTab }: any) {
+function Sidebar({ activeTab, setActiveTab, sidebarRef }: any) {
   const menuItems = [
     {
       icon: <Blocks className="w-5 h-5" />,
@@ -44,7 +44,7 @@ function Sidebar({ activeTab, setActiveTab }: any) {
   ];
 
   return (
-    <div className="w-64 bg-[#5067bb] text-white h-screen fixed left-0 top-0">
+    <div ref={sidebarRef} className="w-64 bg-[#5067bb] text-white h-screen fixed left-0 top-0 hidden lg:block">
       <div className="p-6 ">
         <div className="flex flex-col items-center space-x-2">
           <div className="w-8 h-8 rounded-lg flex items-center justify-center">

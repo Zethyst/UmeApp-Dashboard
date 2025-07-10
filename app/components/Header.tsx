@@ -2,14 +2,14 @@ import React from "react";
 import { Search, Bell, User } from "lucide-react";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 
-function Header() {
+function Header({headerRef}: any) {
   return (
-    <header className="bg-white  border-b px-6 py-4 ml-64">
+    <header ref={headerRef} className="bg-white  border-b px-6 py-4 lg:ml-64">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-800">Dashboard</h1>
 
         <div className="flex items-center space-x-4">
-          <div className="relative bg-gray-100 rounded-md">
+          <div className="relative hidden md:block bg-gray-100 rounded-md">
             <Search className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
             <input
               type="text"
@@ -18,7 +18,7 @@ function Header() {
             />
           </div>
 
-          <button className="p-2 bg-gray-100 hover:bg-gray-200 cursor-pointer rounded-md relative">
+          <button className="p-2 hidden md:block bg-gray-100 hover:bg-gray-200 cursor-pointer rounded-md relative">
             <NotificationsIcon className="w-5 h-5 text-gray-800 " />
             <div className="absolute right-2.5 top-3 bg-red-500 rounded-full p-1"></div>
           </button>
