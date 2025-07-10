@@ -8,38 +8,15 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  LineChart,
-  Line,
-  Area,
-  AreaChart,
 } from "recharts";
-
-import {
-  User,
-  MoreHorizontal,
-  Calendar,
-  Clock,
-  Eye,
-  Blocks,
-  ChevronLeft,
-  ChevronRight,
-  MessageSquare,
-} from "lucide-react";
+import RevenueChart from "./components/RevenueChart";
+import { MessageSquare } from "lucide-react";
 import Sidebar from "./components/Sidebar";
 import Header from "./components/Header";
 import Stats from "./components/Stats";
 import WebinarCard from "./components/WebinarCard";
 import StudentTable from "./components/StudentTable";
 
-// Mock data for charts
-const revenueData = [
-  { month: "Jan", income: 85000, expenses: 72000 },
-  { month: "Feb", income: 92000, expenses: 78000 },
-  { month: "Mar", income: 78000, expenses: 65000 },
-  { month: "Apr", income: 105000, expenses: 88000 },
-  { month: "May", income: 95000, expenses: 82000 },
-  { month: "Jun", income: 110000, expenses: 95000 },
-];
 const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 const placementData = [
@@ -47,58 +24,6 @@ const placementData = [
   { month: "Apr-Jun", studentsPlaced: 520, companiesVisited: 380 },
   { month: "Jul-Sep", studentsPlaced: 580, companiesVisited: 420 },
   { month: "Oct-Dec", studentsPlaced: 610, companiesVisited: 450 },
-];
-
-const studentData = [
-  {
-    name: "Vijayabala",
-    status: "Enrolled",
-    course: "UI/UX Design",
-    enrolled: "10/06/2023",
-    progress: 85,
-  },
-  {
-    name: "Praveen",
-    status: "Enrolled",
-    course: "Full Stack Development",
-    enrolled: "10/06/2023",
-    progress: 72,
-  },
-  {
-    name: "Arjit",
-    status: "Enrolled",
-    course: "Front-End Development",
-    enrolled: "07/06/2023",
-    progress: 68,
-  },
-  {
-    name: "Ajith",
-    status: "Enrolled",
-    course: "Back-End Development",
-    enrolled: "25/05/2023",
-    progress: 91,
-  },
-  {
-    name: "Mandeep",
-    status: "Enrolled",
-    course: "UI/UX Design",
-    enrolled: "20/05/2023",
-    progress: 55,
-  },
-  {
-    name: "Arjit",
-    status: "Unenrolled",
-    course: "Front-End Development",
-    enrolled: "01/04/2023",
-    progress: 0,
-  },
-];
-
-const trainers = [
-  { name: "Arjit", role: "Full Stack Developer", avatar: "👨‍💻" },
-  { name: "Saranya", role: "Front-End Development", avatar: "👩‍💻" },
-  { name: "Ravi", role: "UI/UX Designer", avatar: "👨‍🎨" },
-  { name: "Saranya", role: "Front-End Development", avatar: "👩‍💻" },
 ];
 
 const profiles = [
@@ -180,6 +105,7 @@ const ProgressBar = ({ progress }: any) => (
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [students, setStudents] = useState([]);
 
   const getWeekDates = () => {
     const today = new Date(currentDate);
@@ -208,47 +134,10 @@ const Dashboard = () => {
       <Header />
       <div className="flex justify-center items-start">
         <main className="ml-64 p-6 flex flex-col space-y-6 ">
-          <Stats />
+          <Stats students={students} />
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-            {/* Revenue Chart */}
-            <Card>
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold">Revenue</h3>
-                <select className="border border-gray-300 rounded px-3 py-1 text-sm">
-                  <option>Week</option>
-                  <option>Month</option>
-                  <option>Year</option>
-                </select>
-              </div>
-              <p className="text-sm text-gray-600 mb-4">
-                Income & Expenses Comparison
-              </p>
-              <ResponsiveContainer width="100%" height={300}>
-                <AreaChart data={revenueData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="month" />
-                  <YAxis />
-                  <Tooltip />
-                  <Area
-                    type="monotone"
-                    dataKey="income"
-                    stackId="1"
-                    stroke="#3B82F6"
-                    fill="#3B82F6"
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="expenses"
-                    stackId="1"
-                    stroke="#EF4444"
-                    fill="#EF4444"
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            </Card>
-
-            {/* Placement Data Chart */}
+            <RevenueChart />
             <Card>
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold">Placement Data</h3>
@@ -266,15 +155,14 @@ const Dashboard = () => {
                   <XAxis dataKey="month" />
                   <YAxis />
                   <Tooltip />
-                  <Bar dataKey="studentsPlaced" fill="#3B82F6" />
-                  <Bar dataKey="companiesVisited" fill="#EF4444" />
+                  <Bar dataKey="studentsPlaced" fill="#5067bb" />
+                  <Bar dataKey="companiesVisited" fill="#be6988 " />
                 </BarChart>
               </ResponsiveContainer>
             </Card>
           </div>
 
           <div className="grid grid-cols-1 gap-6">
-            {/* Student Details Table */}
             <Card className="lg:col-span-2">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-bold tracking-wide">
@@ -301,7 +189,7 @@ const Dashboard = () => {
               </div>
 
               <div className="overflow-x-auto">
-                <StudentTable />
+                <StudentTable students={students} setStudents={setStudents} />
               </div>
             </Card>
           </div>

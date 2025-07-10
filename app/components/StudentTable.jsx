@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { MoreHorizontal, Edit, Trash2, Plus, X, Check } from "lucide-react";
+import { MoreHorizontal, Edit, Trash2, Plus, X, Check, MoreVertical } from "lucide-react";
 
-const StudentTable = () => {
-  const [students, setStudents] = useState([]);
+const StudentTable = ({students, setStudents}) => {
   const [selectedStudents, setSelectedStudents] = useState([]);
   const [dropdownOpen, setDropdownOpen] = useState(null);
   const [editingStudent, setEditingStudent] = useState(null);
@@ -83,9 +82,9 @@ const StudentTable = () => {
   }, [students]);
 
   const ProgressBar = ({ progress }) => (
-    <div className="w-20 bg-gray-200 rounded-full h-2">
+    <div className="w-20 bg-[#be6988] rounded-full h-2">
       <div
-        className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all duration-300"
+        className="bg-[#5067bb] h-2 rounded-full transition-all duration-300"
         style={{ width: `${progress}%` }}
       />
     </div>
@@ -243,7 +242,7 @@ const StudentTable = () => {
 
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
-          <thead className="bg-gray-50">
+          <thead className="">
             <tr>
               <th className="text-left p-3">
                 <input
@@ -278,9 +277,6 @@ const StudentTable = () => {
                   />
                 </td>
                 <td className="p-3 flex items-center space-x-2">
-                  <div className="w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center text-white text-xs">
-                    {student.name.charAt(0)}
-                  </div>
                   {editingStudent?.id === student.id ? (
                     <input
                       type="text"
@@ -291,7 +287,7 @@ const StudentTable = () => {
                           name: e.target.value,
                         })
                       }
-                      className="px-2 py-1 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className=" p-1 w-20 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   ) : (
                     <span>{student.name}</span>
@@ -314,14 +310,18 @@ const StudentTable = () => {
                     </select>
                   ) : (
                     <span
-                      className={`px-2 py-1 rounded-full text-xs ${
-                        student.status === "Enrolled"
-                          ? "bg-green-100 text-green-800"
-                          : "bg-red-100 text-red-800"
-                      }`}
+                      className={`inline-flex w-24 items-center gap-2 px-2 py-1 rounded-full text-xs border-2 ${student.status === "Enrolled"
+                          ? "border-green-200 text-green-800 tracking-wider"
+                          : "border-red-200 text-red-800"
+                        }`}
                     >
+                      <span
+                        className={`w-2 h-2 rounded-full ${student.status === "Enrolled" ? "bg-green-300" : "bg-red-300"
+                          }`}
+                      ></span>
                       {student.status}
                     </span>
+
                   )}
                 </td>
                 <td className="p-3">
@@ -350,9 +350,6 @@ const StudentTable = () => {
                 <td className="p-3">
                   <div className="flex items-center space-x-2">
                     <ProgressBar progress={student.progress} />
-                    <span className="text-xs text-gray-600">
-                      {student.progress}%
-                    </span>
                   </div>
                 </td>
                 <td className="p-3">
@@ -381,7 +378,7 @@ const StudentTable = () => {
                         }
                         className="p-1 hover:bg-gray-100 rounded"
                       >
-                        <MoreHorizontal className="w-4 h-4 text-gray-600" />
+                        <MoreVertical className="w-4 h-4 text-gray-600" />
                       </button>
                       {dropdownOpen === student.id && (
                         <div className="absolute right-0 mt-1 w-32 bg-white border rounded-lg shadow-lg z-10">
